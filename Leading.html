@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leadership Assessment - Classroom Slides</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #4682b4; /* Sky blue background */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Fully uniform responsive container across all devices and questions */
+        .slide-container {
+            width: 100%;
+            max-width: 900px;
+            aspect-ratio: 16 / 10;
+            background: #000080; /* Navy blue question container */
+            border-radius: 16px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+            padding: clamp(20px, 4vw, 40px);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .slide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            padding-bottom: 12px;
+            height: 65px;
+        }
+
+        .slide-header h2 {
+            font-size: clamp(1rem, 2.2vw, 1.6rem);
+            color: #ffcc00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .slide-number {
+            font-size: clamp(1rem, 2.2vw, 1.5rem);
+            font-weight: bold;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 6px 15px;
+            border-radius: 8px;
+        }
+
+        .question-area {
+            height: 120px;
+            display: flex;
+            align-items: center;
+        }
+
+        .question-text {
+            font-size: clamp(1.1rem, 2.5vw, 1.7rem);
+            font-weight: 600;
+            line-height: 1.35;
+        }
+
+        .options-viewport {
+            height: 240px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            height: 100%;
+        }
+
+        .options-column {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            height: 100%;
+            justify-content: center;
+        }
+
+        .option-box {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: clamp(0.95rem, 2vw, 1.3rem);
+            font-weight: 600;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            height: 100%;
+        }
+
+        .nav-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            padding-top: 15px;
+            height: 70px;
+        }
+
+        .btn {
+            background-color: #ff8c00;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: clamp(0.9rem, 1.8vw, 1.2rem);
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+            transition: background-color 0.2s;
+        }
+
+        .btn:hover:not(:disabled) {
+            background-color: #ffa500;
+        }
+
+        .btn:disabled {
+            background-color: #555555;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        #prev-btn:disabled {
+            display: none; /* Hides previous button entirely on the first slide */
+        }
+
+        .instruction-tag {
+            font-size: clamp(0.8rem, 1.6vw, 1.1rem);
+            color: #00ffff;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="slide-container">
+        <div class="slide-header">
+            <h2 id="section-title">Leadership Test Slide</h2>
+            <div class="slide-number" id="slide-counter">1 / 20</div>
+        </div>
+
+        <div class="question-area">
+            <div class="question-text" id="question-display">
+                Loading slide...
+            </div>
+        </div>
+
+        <div class="options-viewport">
+            <div id="options-container">
+                <!-- Options dynamically injected -->
+            </div>
+        </div>
+
+        <div class="nav-controls">
+            <button class="btn" id="prev-btn" onclick="changeSlide(-1)" disabled>Previous Slide</button>
+            <span class="instruction-tag"></span>
+            <button class="btn" id="next-btn" onclick="changeSlide(1)">Next Slide</button>
+        </div>
+    </div>
+
+    <script>
+        const slideData = [
+            {
+                type: "mc",
+                question: "What term describes the management function focused on using informal social influence to inspire people?",
+                options: [
+                    "Leading",
+                    "Organizing",
+                    "Controlling",
+                    "Planning"
+                ]
+            },
+            {
+                type: "mc",
+                question: "Which historical concept argues that history is shaped exclusively by extraordinary leaders born with inherent traits?",
+                options: [
+                    "The Great Man theory",
+                    "The Contingency framework",
+                    "The Behavioral matrix",
+                    "The Situational model"
+                ]
+            },
+            {
+                type: "mc",
+                question: "Which famous 1939 psychologist categorized leadership styles using school children on a craft project?",
+                options: [
+                    "Kurt Lewin",
+                    "Thomas Carlyle",
+                    "Fred Fiedler",
+                    "Bernard Bass"
+                ]
+            },
+            {
+                type: "mc",
+                question: "What leadership style relies on dictating policies and procedures while requiring close supervision without team input?",
+                options: [
+                    "Authoritarian (Autocratic)",
+                    "Participative (Democratic)",
+                    "Delegative (Laissez-Faire)",
+                    "Transformational"
+                ]
+            },
+            {
+                type: "mc",
+                question: "What leadership style involves asking for team input and offering guidance while keeping the final decision power?",
+                options: [
+                    "Participative (Democratic)",
+                    "Authoritarian (Autocratic)",
+                    "Transactional",
+                    "Charismatic"
+                ]
+            },
+            {
+                type: "mc",
+                question: "What hands-off leadership style provides tools and resources but hands over all decision power entirely to the group?",
+                options: [
+                    "Delegative (Laissez-Faire)",
+                    "Participative (Democratic)",
+                    "Authoritarian",
+                    "Transformational"
+                ]
+            },
+            {
+                type: "mc",
+                question: "What kind of leadership deals with day-to-day tasks through an exchange of direction and rewards for productivity?",
+                options: [
+                    "Transactional leadership",
+                    "Transformational leadership",
+                    "Charismatic leadership",
+                    "Trait-based leadership"
+                ]
+            },
+            {
+                type: "mc",
+                question: "What leadership approach goes beyond basic rewards by providing intellectual stimulation and personal consideration?",
+                options: [
+                    "Transformational leadership",
+                    "Transactional leadership",
+                    "Authoritarian leadership",
+                    "Delegative leadership"
+                ]
+            },
+            {
+                type: "mc",
+                question: "What is cited as the primary disadvantage of utilizing a committee form of organization?",
+                options: [
+                    "Delayed decision-making processes",
+                    "Too much individual employee accountability",
+                    "Excessive innovation and risk-taking",
+                    "Complete lack of diverse viewpoints"
+                ]
+            },
+            {
+                type: "mc",
+                question: "How is a team formally defined in an organizational setting?",
+                options: [
+                    "A group performing interdependent tasks toward a common objective",
+                    "A random group of individuals working on independent projects",
+                    "A permanent department handling payroll paperwork",
+                    "An informal social club without performance goals"
+                ]
+            },
+            {
+                type: "tf",
+                question: "Leading is completely identical to the organizing function of management.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "Motivational leadership is defined by positivity, vision, goal-setting, and team empowerment.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "According to Thomas Carlyle, leadership ability is something that can always be fully learned through standard training.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "Subordinates under transactional leadership are consistently expected to think innovatively and creatively on their own.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "Transformational leadership operates especially well in close supervisory environments like mental health settings.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "In committee compromises, majority views are treated as unanimous, often forcing minorities to accept sub-optimal choices.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "A major drawback of committees is that individual accountability is easily and clearly fixed when bad decisions occur.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "The overall success of a committee depends heavily on the effectiveness of its committee chair.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "If paid staff cannot be afforded, committee members assigned to tasks do not need to be conscientious.",
+                options: ["True", "False", "[  ]"]
+            },
+            {
+                type: "tf",
+                question: "Knowing a clear team purpose helps motivate individuals into action while creating awareness and inclusion.",
+                options: ["True", "False", "[  ]"]
+            }
+        ];
+
+        const vividColors = [
+            "#b22222", // Firebrick Red
+            "#228b22", // Forest Green
+            "#ff4500", // Orange Red
+            "#9932cc", // Dark Orchid
+            "#008b8b", // Dark Cyan
+            "#8b008b", // Dark Magenta
+            "#4169e1", // Royal Blue
+            "#d2691e", // Chocolate
+            "#2e8b57", // Sea Green
+            "#c71585"  // Medium Violet Red
+        ];
+
+        function getRandomColors(count) {
+            let shuffled = [...vividColors].sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, count);
+        }
+
+        let currentSlideIndex = 0;
+
+        function renderSlide() {
+            const slide = slideData[currentSlideIndex];
+            
+            document.getElementById('section-title').innerText = slide.type === 'mc' ? 'Multiple Choice' : 'True or False';
+            document.getElementById('slide-counter').innerText = `${currentSlideIndex + 1} / ${slideData.length}`;
+            document.getElementById('question-display').innerText = `${currentSlideIndex + 1}. ${slide.question}`;
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            if (slide.type === 'mc') {
+                optionsContainer.className = 'options-grid';
+                let colors = getRandomColors(slide.options.length);
+
+                slide.options.forEach((opt, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'option-box';
+                    div.style.backgroundColor = colors[idx];
+                    let prefix = String.fromCharCode(65 + idx);
+                    div.innerText = `${prefix}. ${opt}`;
+                    optionsContainer.appendChild(div);
+                });
+            } else {
+                optionsContainer.className = 'options-column';
+                let colors = getRandomColors(slide.options.length);
+
+                slide.options.forEach((opt, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'option-box';
+                    div.style.backgroundColor = colors[idx];
+                    div.innerText = opt;
+                    optionsContainer.appendChild(div);
+                });
+            }
+
+            document.getElementById('prev-btn').disabled = currentSlideIndex === 0;
+            
+            const nextBtn = document.getElementById('next-btn');
+            if (currentSlideIndex === slideData.length - 1) {
+                nextBtn.innerText = "End of Quiz";
+                nextBtn.disabled = true; // Disabled strictly so it cannot be clicked
+            } else {
+                nextBtn.innerText = "Next Slide";
+                nextBtn.disabled = false;
+            }
+        }
+
+        function changeSlide(direction) {
+            currentSlideIndex += direction;
+            if (currentSlideIndex < 0) currentSlideIndex = 0;
+            if (currentSlideIndex >= slideData.length) currentSlideIndex = slideData.length - 1;
+            renderSlide();
+        }
+
+        window.onload = renderSlide;
+    </script>
+</body>
+</html>
